@@ -32,7 +32,7 @@ export const Recorder: React.FC<RecorderProps> = ({
   const chunksRef = React.useRef<Blob[]>([]);
   const audioContextRef = React.useRef<AudioContext | null>(null);
   const analyserRef = React.useRef<AnalyserNode | null>(null);
-  const dataArrayRef = React.useRef<Float32Array | null>(null);
+  const dataArrayRef = React.useRef<Float32Array<ArrayBuffer> | null>(null);
   const rafRef = React.useRef<number>();
 
   const stopMonitoringVolume = React.useCallback(async () => {
@@ -105,7 +105,10 @@ export const Recorder: React.FC<RecorderProps> = ({
 
     audioContextRef.current = audioContext;
     analyserRef.current = analyser;
-    dataArrayRef.current = new Float32Array(analyser.fftSize);
+    const buffer = new ArrayBuffer(
+      analyser.fftSize * Float32Array.BYTES_PER_ELEMENT
+    );
+    dataArrayRef.current = new Float32Array(buffer) as Float32Array<ArrayBuffer>;
 
     const updateVolume = () => {
       const analyserNode = analyserRef.current;
