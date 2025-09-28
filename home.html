@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supramath API | Launch Math-Powered Experiences</title>
+  <meta name="description" content="Supramath API delivers instant access to 200+ math and engineering formulas, built for modern product teams, analysts, and researchers." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      color-scheme: light;
+    }
+    .hero-gradient {
+      background: radial-gradient(circle at top right, rgba(253, 186, 116, 0.16), transparent 46%),
+                  radial-gradient(circle at bottom left, rgba(254, 215, 170, 0.2), transparent 42%),
+                  linear-gradient(135deg, #fffdf7, #fff7ed);
+    }
+    .fade-text {
+      transition: opacity 0.6s ease;
+    }
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+  </style>
+</head>
+<body class="bg-[#fffaf0] text-slate-900 antialiased">
+  <div class="relative min-h-screen overflow-hidden">
+    <div class="hero-gradient absolute inset-x-0 top-0 h-[520px] lg:h-[620px] -z-10"></div>
+
+    <header class="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2 text-orange-600 font-semibold text-xl">
+        <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-white text-lg shadow-lg">Σ</span>
+        Supramath API
+      </a>
+      <nav class="hidden md:flex items-center gap-8 text-sm text-slate-600">
+        <a href="#features" class="hover:text-slate-900 transition">Features</a>
+        <a href="#demo" class="hover:text-slate-900 transition">Integrations</a>
+        <a href="#pricing" class="hover:text-slate-900 transition">Pricing</a>
+        <a href="#faq" class="hover:text-slate-900 transition">FAQ</a>
+      </nav>
+      <div class="hidden md:flex items-center gap-3">
+        <a href="#demo" class="text-sm text-slate-600 hover:text-slate-900">Docs</a>
+        <a href="#cta" class="px-4 py-2 rounded-full bg-orange-500 text-white font-semibold shadow-sm hover:-translate-y-0.5 transition transform">Start free trial</a>
+      </div>
+      <button class="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full border border-orange-200 text-orange-600" aria-label="Open navigation">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.75h16.5m-16.5 6.5h16.5m-16.5 6.5h16.5" />
+        </svg>
+      </button>
+    </header>
+
+    <main class="pb-32 space-y-32">
+      <section class="pt-16">
+        <div class="max-w-6xl mx-auto px-6 grid gap-16 lg:grid-cols-[minmax(0,1fr),minmax(0,0.9fr)] items-center">
+          <div class="space-y-8">
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 text-xs uppercase tracking-[0.2em] text-orange-500">Instant math API</span>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-slate-900">Super Math for teams that live in numbers</h1>
+            <p class="text-lg text-slate-700 max-w-xl leading-relaxed">Give your users fast, trustworthy computations without maintaining symbolic engines. Supramath evaluates, explains, and formats every answer for you.</p>
+            <div class="space-y-3">
+              <p class="text-sm uppercase tracking-[0.3em] text-orange-500">Functions on rotation</p>
+              <div class="h-10 flex items-center text-2xl font-semibold text-slate-900">
+                <span id="function-text" class="fade-text opacity-0"></span>
+              </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4 pt-2">
+              <a href="#cta" class="px-6 py-3 rounded-full bg-orange-500 hover:bg-orange-600 font-semibold text-white shadow-sm transition">Start your free trial</a>
+              <a href="#demo" class="px-6 py-3 rounded-full border border-orange-200 hover:border-orange-300 text-orange-600 font-semibold transition bg-white/70">Book a walkthrough</a>
+            </div>
+            <dl class="grid grid-cols-2 sm:grid-cols-3 gap-x-10 gap-y-6 pt-4 text-sm text-slate-600">
+              <div>
+                <dt class="text-xs uppercase tracking-[0.28em] text-orange-500">Formulas</dt>
+                <dd class="mt-2 text-2xl font-semibold text-slate-900">200+</dd>
+              </div>
+              <div>
+                <dt class="text-xs uppercase tracking-[0.28em] text-orange-500">Median latency</dt>
+                <dd class="mt-2 text-2xl font-semibold text-slate-900">50&nbsp;ms</dd>
+              </div>
+              <div>
+                <dt class="text-xs uppercase tracking-[0.28em] text-orange-500">Uptime</dt>
+                <dd class="mt-2 text-2xl font-semibold text-slate-900">99.9%</dd>
+              </div>
+            </dl>
+          </div>
+          <div class="relative">
+            <div class="rounded-[32px] border border-orange-100 bg-white/85 p-10 backdrop-blur-sm space-y-6">
+              <div class="flex items-center justify-between text-xs uppercase tracking-[0.28em] text-orange-400">
+                <span>POST /v1/solve</span>
+                <span>48&nbsp;ms avg</span>
+              </div>
+              <p class="text-slate-600 leading-relaxed">Submit any expression and Supramath returns symbolic, numeric, and step-by-step results that are ready for your UI.</p>
+              <pre class="rounded-2xl bg-orange-50 border border-orange-100 p-6 text-sm text-slate-800 overflow-x-auto"><code>{
+  "expression": "integrate(sin(x)^2, x)",
+  "bounds": {
+    "lower": 0,
+    "upper": "pi"
+  },
+  "format": ["symbolic", "numeric", "steps"]
+}</code></pre>
+              <p class="text-sm text-slate-500">Result → π / 2 with inline explanations and LaTeX markup.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section aria-label="Customer logos">
+        <div class="max-w-4xl mx-auto px-6 text-center space-y-8">
+          <p class="text-sm uppercase tracking-[0.32em] text-orange-500">Trusted by product, quant, and research teams</p>
+          <div class="flex flex-wrap justify-center gap-x-12 gap-y-6 text-slate-400 text-lg">
+            <span class="font-semibold">Eulersoft</span>
+            <span class="font-semibold">Quantverse</span>
+            <span class="font-semibold">TensorForge</span>
+            <span class="font-semibold">Nova Labs</span>
+            <span class="font-semibold">AxiomAI</span>
+            <span class="font-semibold">Circuitry</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="features">
+        <div class="max-w-5xl mx-auto px-6 text-center">
+          <h2 class="text-3xl md:text-4xl font-semibold text-slate-900">Make every calculation effortless</h2>
+          <p class="mt-4 text-slate-600 leading-relaxed">A lean toolkit built for clarity and reliability—so your team can focus on user experience, not math infrastructure.</p>
+          <div class="mt-12 grid gap-10 md:grid-cols-3 text-left">
+            <div class="space-y-3">
+              <h3 class="text-xl font-semibold text-slate-900">Compute instantly</h3>
+              <p class="text-slate-600 leading-relaxed">Edge workers resolve formulas in under 60&nbsp;ms with automatic scaling.</p>
+            </div>
+            <div class="space-y-3">
+              <h3 class="text-xl font-semibold text-slate-900">Explain every step</h3>
+              <p class="text-slate-600 leading-relaxed">Return symbolic derivations, numeric answers, plots, and LaTeX in one payload.</p>
+            </div>
+            <div class="space-y-3">
+              <h3 class="text-xl font-semibold text-slate-900">Integrate anywhere</h3>
+              <p class="text-slate-600 leading-relaxed">Use REST, Python, or JS SDKs with webhook callbacks and Sheets connectors.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="demo">
+        <div class="max-w-5xl mx-auto px-6 grid gap-12 lg:grid-cols-2 items-start">
+          <div class="space-y-6">
+            <h2 class="text-3xl font-semibold text-slate-900">Drop-in code for your stack</h2>
+            <p class="text-slate-600 leading-relaxed">Ask Supramath for derivatives, optimizations, transforms, or matrix operations—the SDK keeps authentication, retries, and formatting tidy.</p>
+            <ul class="space-y-4 text-slate-600 text-sm">
+              <li class="flex items-start gap-3"><span class="mt-1 h-6 w-6 inline-flex items-center justify-center rounded-full bg-orange-100 text-orange-600">1</span><span>Batch process thousands of expressions with automatic rate smoothing.</span></li>
+              <li class="flex items-start gap-3"><span class="mt-1 h-6 w-6 inline-flex items-center justify-center rounded-full bg-orange-100 text-orange-600">2</span><span>Request side-by-side symbolic and numeric answers for every formula.</span></li>
+              <li class="flex items-start gap-3"><span class="mt-1 h-6 w-6 inline-flex items-center justify-center rounded-full bg-orange-100 text-orange-600">3</span><span>Stream explanations directly into dashboards, docs, or chatbots.</span></li>
+            </ul>
+          </div>
+          <div class="rounded-[32px] border border-orange-100 bg-white/85 p-8 space-y-6">
+            <div class="flex items-center justify-between text-xs uppercase tracking-[0.28em] text-orange-400">
+              <span>Python SDK</span>
+              <span>v2.4</span>
+            </div>
+            <pre class="rounded-2xl bg-orange-50 border border-orange-100 p-6 text-sm text-slate-800 overflow-x-auto"><code>from supramath import Client
+
+client = Client(api_key="sm_live_XXXX")
+
+response = client.solve(
+    expression="d/dx (e^(2x) * cos(x))",
+    variables={"x": 0},
+    format=["symbolic", "numeric", "steps"],
+)
+
+print(response.symbolic)
+# 2e^(2x)cos(x) - e^(2x)sin(x)</code></pre>
+            <p class="text-sm text-slate-500">Production ready in five minutes with sensible defaults.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing">
+        <div class="max-w-5xl mx-auto px-6 text-center space-y-12">
+          <div class="space-y-4">
+            <h2 class="text-3xl md:text-4xl font-semibold text-slate-900">Plans designed to grow with you</h2>
+            <p class="text-slate-600">Start with generous free usage, then scale when your workloads demand more throughput or controls.</p>
+          </div>
+          <div class="grid gap-8 md:grid-cols-3 items-start">
+            <div class="rounded-[28px] border border-orange-100 bg-white p-8 space-y-6 text-left">
+              <h3 class="text-xl font-semibold text-slate-900">Starter</h3>
+              <p class="text-slate-600">Prototype calculators and classroom apps.</p>
+              <p class="text-4xl font-semibold text-slate-900">$0<span class="text-base text-slate-500">/mo</span></p>
+              <ul class="space-y-3 text-sm text-slate-600">
+                <li>• 1,000 requests each month</li>
+                <li>• Core formula library</li>
+                <li>• Community support</li>
+              </ul>
+              <a href="#cta" class="inline-flex justify-center rounded-full border border-orange-200 px-5 py-3 font-semibold text-orange-600 hover:border-orange-300 transition">Launch for free</a>
+            </div>
+            <div class="rounded-[28px] border border-orange-200 bg-gradient-to-b from-orange-100 via-white to-white p-8 space-y-6 text-left shadow-sm">
+              <span class="self-start rounded-full bg-orange-500 text-white text-xs uppercase tracking-wide px-3 py-1 font-semibold">Most popular</span>
+              <h3 class="text-xl font-semibold text-slate-900">Scale</h3>
+              <p class="text-slate-600">Power production workloads with observability.</p>
+              <p class="text-4xl font-semibold text-slate-900">$149<span class="text-base text-slate-500">/mo</span></p>
+              <ul class="space-y-3 text-sm text-slate-600">
+                <li>• 250k requests per month</li>
+                <li>• Batch jobs & webhooks</li>
+                <li>• Dedicated success engineer</li>
+                <li>• SOC 2 report access</li>
+              </ul>
+              <a href="#cta" class="inline-flex justify-center rounded-full bg-orange-500 text-white px-5 py-3 font-semibold hover:bg-orange-600 transition">Start Scale trial</a>
+            </div>
+            <div class="rounded-[28px] border border-orange-100 bg-white p-8 space-y-6 text-left">
+              <h3 class="text-xl font-semibold text-slate-900">Enterprise</h3>
+              <p class="text-slate-600">Dedicated infrastructure and compliance controls.</p>
+              <p class="text-4xl font-semibold text-slate-900">Let’s chat</p>
+              <ul class="space-y-3 text-sm text-slate-600">
+                <li>• Unlimited requests</li>
+                <li>• Private cloud or on-prem</li>
+                <li>• 15-minute response SLA</li>
+              </ul>
+              <a href="#cta" class="inline-flex justify-center rounded-full border border-orange-200 px-5 py-3 font-semibold text-orange-600 hover:border-orange-300 transition">Contact sales</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="testimonials">
+        <div class="max-w-5xl mx-auto px-6 grid gap-12 lg:grid-cols-[minmax(0,1fr),minmax(0,0.8fr)] items-start">
+          <div class="space-y-6">
+            <h2 class="text-3xl font-semibold text-slate-900">Loved by builders and researchers</h2>
+            <p class="text-slate-600 leading-relaxed">Teams rely on Supramath to launch faster, avoid math errors, and keep auditors happy with transparent explanations.</p>
+            <div class="space-y-6">
+              <blockquote class="rounded-[28px] border border-orange-100 bg-white p-6 space-y-4">
+                <div class="text-amber-500 text-sm">★★★★★ <span class="text-slate-500">Quantverse</span></div>
+                <p class="text-slate-700">“We shipped portfolio stress testing in record time. Supramath’s batch jobs and webhooks keep analysts focused on insights, not spreadsheets.”</p>
+                <footer class="text-sm text-slate-500">Mina L., Quant Research Director</footer>
+              </blockquote>
+              <blockquote class="rounded-[28px] border border-orange-100 bg-white p-6 space-y-4">
+                <div class="text-amber-500 text-sm">★★★★★ <span class="text-slate-500">Nova Labs</span></div>
+                <p class="text-slate-700">“As an AI company, we rely on precise math. Supramath’s symbolic solver and LaTeX outputs plug straight into our training dashboards.”</p>
+                <footer class="text-sm text-slate-500">Jake W., Lead ML Engineer</footer>
+              </blockquote>
+            </div>
+          </div>
+          <div class="rounded-[32px] border border-orange-100 bg-white/85 p-8 space-y-5">
+            <p class="text-sm uppercase tracking-[0.32em] text-orange-500">Proof points</p>
+            <ul class="space-y-4 text-slate-600 text-sm">
+              <li><strong>70% faster launches</strong> when teams reuse our prebuilt calculators and docs.</li>
+              <li><strong>Zero math drift</strong> with regression suites that mirror MATLAB and Mathematica.</li>
+              <li><strong>Enterprise-ready security</strong> including SSO, audit logs, and private deployments.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq">
+        <div class="max-w-4xl mx-auto px-6 text-center space-y-8">
+          <div class="space-y-4">
+            <h2 class="text-3xl md:text-4xl font-semibold text-slate-900">Frequently asked questions</h2>
+            <p class="text-slate-600">Quick answers about accuracy, deployment, and support.</p>
+          </div>
+          <div class="grid gap-6 md:grid-cols-2 text-left">
+            <div class="rounded-[24px] border border-orange-100 bg-white p-6 space-y-3">
+              <h3 class="text-lg font-semibold text-slate-900">How accurate is Supramath?</h3>
+              <p class="text-slate-600">We maintain 99% parity with MATLAB’s core formulas and verify each release against regression suites.</p>
+            </div>
+            <div class="rounded-[24px] border border-orange-100 bg-white p-6 space-y-3">
+              <h3 class="text-lg font-semibold text-slate-900">Can I deploy privately?</h3>
+              <p class="text-slate-600">Enterprise plans include private cloud and on-prem options with dedicated infrastructure support.</p>
+            </div>
+            <div class="rounded-[24px] border border-orange-100 bg-white p-6 space-y-3">
+              <h3 class="text-lg font-semibold text-slate-900">Do you offer education pricing?</h3>
+              <p class="text-slate-600">Students and accredited institutions receive 50% off the Scale plan. Contact us to confirm eligibility.</p>
+            </div>
+            <div class="rounded-[24px] border border-orange-100 bg-white p-6 space-y-3">
+              <h3 class="text-lg font-semibold text-slate-900">What support is included?</h3>
+              <p class="text-slate-600">All plans include community support. Scale and Enterprise tiers add dedicated engineers with 24/7 coverage.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="cta">
+        <div class="max-w-3xl mx-auto px-6 text-center">
+          <div class="rounded-[40px] border border-orange-100 bg-gradient-to-r from-orange-100 via-white to-amber-100 p-12 space-y-6">
+            <p class="text-sm uppercase tracking-[0.4em] text-orange-500">Ready when you are</p>
+            <h2 class="text-3xl md:text-4xl font-semibold text-slate-900">Activate Supramath and ship your next math-powered product</h2>
+            <p class="text-slate-600">Set up in minutes, integrate anywhere, and deliver precise answers your users will trust.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+              <a href="#" class="px-6 py-3 rounded-full bg-orange-500 text-white font-semibold hover:bg-orange-600 transition">Create free account</a>
+              <a href="#demo" class="px-6 py-3 rounded-full border border-orange-200 text-orange-600 font-semibold bg-white hover:border-orange-300 transition">See integration guide</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-orange-100 py-12 bg-white/80">
+      <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-10 text-slate-600 text-sm">
+        <div>
+          <a href="#" class="flex items-center gap-2 text-orange-600 font-semibold text-lg">
+            <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-orange-500 text-white text-base shadow-lg">Σ</span>
+            Supramath API
+          </a>
+          <p class="mt-4 text-slate-500">The trusted math API for builders shipping revenue-critical experiences.</p>
+        </div>
+        <div>
+          <h3 class="text-slate-900 font-semibold mb-3">Product</h3>
+          <ul class="space-y-2">
+            <li><a class="hover:text-orange-600 transition" href="#features">Features</a></li>
+            <li><a class="hover:text-orange-600 transition" href="#pricing">Pricing</a></li>
+            <li><a class="hover:text-orange-600 transition" href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-slate-900 font-semibold mb-3">Developers</h3>
+          <ul class="space-y-2">
+            <li><a class="hover:text-orange-600 transition" href="#demo">SDKs</a></li>
+            <li><a class="hover:text-orange-600 transition" href="#">Status</a></li>
+            <li><a class="hover:text-orange-600 transition" href="#">Changelog</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-slate-900 font-semibold mb-3">Company</h3>
+          <ul class="space-y-2">
+            <li><a class="hover:text-orange-600 transition" href="#cta">Contact</a></li>
+            <li><a class="hover:text-orange-600 transition" href="#">Partners</a></li>
+            <li><a class="hover:text-orange-600 transition" href="#">Legal</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-10 text-center text-xs text-slate-500">© <span id="year"></span> Supramath Labs. All rights reserved.</div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const functions = [
+      "integrate(sin(x)^2, x)",
+      "solve(x^3 - 4x + 1 = 0)",
+      "limit((1 + 1/n)^n, n→∞)",
+      "fft([2, 5, 9, 4])",
+      "matrix_inverse([[2,1],[5,3]])",
+      "derivative(e^(2x) * cos(x), x)"
+    ];
+
+    const functionEl = document.getElementById("function-text");
+    let functionIndex = 0;
+
+    function cycleFunction() {
+      if (!functionEl) return;
+      functionEl.classList.remove("opacity-100");
+      functionEl.classList.add("opacity-0");
+      setTimeout(() => {
+        functionEl.textContent = functions[functionIndex];
+        functionEl.classList.remove("opacity-0");
+        functionEl.classList.add("opacity-100");
+        functionIndex = (functionIndex + 1) % functions.length;
+      }, 320);
+    }
+
+    if (functionEl) {
+      functionEl.textContent = functions[0];
+      functionEl.classList.add("opacity-100");
+      functionIndex = 1 % functions.length;
+      setInterval(cycleFunction, 2600);
+    }
+  </script>
+</body>
+</html>
