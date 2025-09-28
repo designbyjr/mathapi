@@ -1,25 +1,63 @@
-import { Loader2, Mic, Square } from "lucide-react";
 import React from "react";
 import { pipeline, type Pipeline } from "@xenova/transformers";
-import { Button } from "./ui/button";
+
+interface RecorderRenderProps {
+  startRecording: () => Promise<void>;
+  stopRecording: () => void;
+  isRecording: boolean;
+  isProcessing: boolean;
+  isLoadingModel: boolean;
+  volume: number;
+}
 
 interface RecorderProps {
   onTranscription: (text: string) => void;
   onStatusChange?: (status: string | null) => void;
   onError?: (error: string) => void;
+  children: (props: RecorderRenderProps) => React.ReactNode;
 }
 
 export const Recorder: React.FC<RecorderProps> = ({
   onTranscription,
   onStatusChange,
-  onError
+  onError,
+  children
 }) => {
   const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
   const [isRecording, setIsRecording] = React.useState(false);
   const [isLoadingModel, setIsLoadingModel] = React.useState(true);
   const [isProcessing, setIsProcessing] = React.useState(false);
+  const [volume, setVolume] = React.useState(0);
   const pipelineRef = React.useRef<Pipeline | null>(null);
   const chunksRef = React.useRef<Blob[]>([]);
+  const audioContextRef = React.useRef<AudioContext | null>(null);
+  const analyserRef = React.useRef<AnalyserNode | null>(null);
+  const dataArrayRef = React.useRef<Float32Array | null>(null);
+  const rafRef = React.useRef<number>();
+
+  const stopMonitoringVolume = React.useCallback(async () => {
+    if (rafRef.current != null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = undefined;
+    }
+
+    setVolume(0);
+
+    try {
+      if (analyserRef.current) {
+        analyserRef.current.disconnect();
+      }
+      if (audioContextRef.current) {
+        await audioContextRef.current.close();
+      }
+    } catch (error) {
+      console.warn("Failed to close audio context", error);
+    } finally {
+      audioContextRef.current = null;
+      analyserRef.current = null;
+      dataArrayRef.current = null;
+    }
+  }, []);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -35,7 +73,7 @@ export const Recorder: React.FC<RecorderProps> = ({
           }
         );
         if (!cancelled) {
-          onStatusChange?.(null);
+          onStatusChange?.("Tap the microphone to begin.");
         }
       } catch (error) {
         console.error(error);
@@ -54,16 +92,49 @@ export const Recorder: React.FC<RecorderProps> = ({
         mediaRecorderRef.current.stop();
       }
       pipelineRef.current = null;
+      stopMonitoringVolume();
     };
-  }, [onError, onStatusChange]);
+  }, [onError, onStatusChange, stopMonitoringVolume]);
 
-  const startRecording = async () => {
-    if (isLoadingModel) return;
+  const monitorVolume = React.useCallback((stream: MediaStream) => {
+    const audioContext = new AudioContext();
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 512;
+    const source = audioContext.createMediaStreamSource(stream);
+    source.connect(analyser);
+
+    audioContextRef.current = audioContext;
+    analyserRef.current = analyser;
+    dataArrayRef.current = new Float32Array(analyser.fftSize);
+
+    const updateVolume = () => {
+      const analyserNode = analyserRef.current;
+      const array = dataArrayRef.current;
+      if (!analyserNode || !array) return;
+
+      analyserNode.getFloatTimeDomainData(array);
+      let sumSquares = 0;
+      for (let i = 0; i < array.length; i += 1) {
+        const value = array[i];
+        sumSquares += value * value;
+      }
+      const rms = Math.sqrt(sumSquares / array.length);
+      setVolume(rms);
+      rafRef.current = requestAnimationFrame(updateVolume);
+    };
+
+    updateVolume();
+  }, []);
+
+  const startRecording = React.useCallback(async () => {
+    if (isLoadingModel || isProcessing) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
       mediaRecorderRef.current = recorder;
       chunksRef.current = [];
+
+      monitorVolume(stream);
 
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -81,7 +152,7 @@ export const Recorder: React.FC<RecorderProps> = ({
           const audioBuffer = await audioContext.decodeAudioData(arrayBuffer.slice(0));
           const data = audioBuffer.getChannelData(0);
           const sampleRate = audioBuffer.sampleRate;
-          audioContext.close();
+          await audioContext.close();
 
           if (!pipelineRef.current) {
             throw new Error("Whisper pipeline is not ready");
@@ -92,7 +163,7 @@ export const Recorder: React.FC<RecorderProps> = ({
             chunk_length_s: 30,
             return_timestamps: false
           });
-          const text = typeof result === "string" ? result : result?.text ?? "";
+          const text = typeof result === "string" ? result : (result as { text?: string })?.text ?? "";
           if (text.trim().length > 0) {
             onTranscription(text.trim());
           } else {
@@ -103,48 +174,29 @@ export const Recorder: React.FC<RecorderProps> = ({
           onError?.("Unable to transcribe recording.");
         } finally {
           setIsProcessing(false);
-          onStatusChange?.(null);
+          onStatusChange?.("Tap the microphone to begin.");
         }
       };
 
       recorder.start();
       setIsRecording(true);
-      onStatusChange?.("Recording…");
+      onStatusChange?.("Listening…");
     } catch (error) {
       console.error(error);
       onError?.("Microphone permission denied or unavailable.");
       onStatusChange?.(null);
+      await stopMonitoringVolume();
     }
-  };
+  }, [isLoadingModel, isProcessing, monitorVolume, onError, onStatusChange, stopMonitoringVolume]);
 
-  const stopRecording = () => {
+  const stopRecording = React.useCallback(() => {
     const recorder = mediaRecorderRef.current;
     if (!recorder) return;
     recorder.stop();
     recorder.stream.getTracks().forEach((track) => track.stop());
     setIsRecording(false);
-  };
+    stopMonitoringVolume();
+  }, [stopMonitoringVolume]);
 
-  return (
-    <div className="flex items-center gap-3">
-      <Button
-        onClick={isRecording ? stopRecording : startRecording}
-        disabled={isLoadingModel || isProcessing}
-        className="flex items-center gap-2"
-      >
-        {isRecording ? <Square className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-        {isRecording ? "Stop" : "Record"}
-      </Button>
-      {isLoadingModel && (
-        <span className="flex items-center text-sm text-muted-foreground">
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading model…
-        </span>
-      )}
-      {isProcessing && !isLoadingModel && (
-        <span className="flex items-center text-sm text-muted-foreground">
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Transcribing…
-        </span>
-      )}
-    </div>
-  );
+  return <>{children({ startRecording, stopRecording, isRecording, isProcessing, isLoadingModel, volume })}</>;
 };
