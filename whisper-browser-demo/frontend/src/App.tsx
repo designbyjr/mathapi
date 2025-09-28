@@ -10,7 +10,7 @@ const gradientStyle = {
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
 const App: React.FC = () => {
-  const [status, setStatus] = React.useState<string | null>("Loading Whisper model…");
+  const [status, setStatus] = React.useState<string | null>("Loading Whisper Small Distil…");
   const [error, setError] = React.useState<string | null>(null);
   const [transcript, setTranscript] = React.useState<string>("");
   const [history, setHistory] = React.useState<string[]>([]);

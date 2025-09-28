@@ -1,5 +1,9 @@
 import React from "react";
-import { pipeline, type Pipeline } from "@xenova/transformers";
+import { type Pipeline } from "@xenova/transformers";
+import {
+  isWebGPUSupported,
+  loadWhisperPipeline
+} from "../lib/whisper";
 
 interface RecorderRenderProps {
   startRecording: () => Promise<void>;
@@ -64,28 +68,34 @@ export const Recorder: React.FC<RecorderProps> = ({
     const load = async () => {
       try {
         setIsLoadingModel(true);
-        onStatusChange?.("Loading Whisper model…");
-        pipelineRef.current = await pipeline(
-          "automatic-speech-recognition",
-          "Xenova/whisper-small-distil",
-          {
-            quantized: true
+        onStatusChange?.("Loading Whisper Small Distil…");
+        const pipeline = await loadWhisperPipeline((message) => {
+          if (cancelled) return;
+          const trimmed = message.trim();
+          if (trimmed.length > 0) {
+            onStatusChange?.(`Loading Whisper Small Distil… ${trimmed}`);
           }
-        );
-        if (!cancelled) {
-          onStatusChange?.("Tap the microphone to begin.");
+        });
+        if (cancelled) {
+          return;
         }
+
+        pipelineRef.current = pipeline;
+        const accelerator = isWebGPUSupported ? "WebGPU" : "WebAssembly";
+        onStatusChange?.(`Tap the microphone to begin (${accelerator}).`);
       } catch (error) {
         console.error(error);
-        onError?.("Failed to load Whisper model. See console for details.");
-        onStatusChange?.(null);
+        if (!cancelled) {
+          onError?.("Failed to load Whisper model. See console for details.");
+          onStatusChange?.(null);
+        }
       } finally {
         if (!cancelled) {
           setIsLoadingModel(false);
         }
       }
     };
-    load();
+    void load();
     return () => {
       cancelled = true;
       if (mediaRecorderRef.current?.state === "recording") {
